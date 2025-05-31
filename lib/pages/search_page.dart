@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/product_list_view.dart';
-import './barcode_scanner_page.dart';
 import '../services/db_helper.dart';
 
 class SearchPage extends StatefulWidget {
@@ -19,12 +18,25 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage>{
+  final TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> allProducts = [];
 
   @override
   void initState() {
     super.initState();
     _loadProducts();
+    _searchController.text = widget.searchText;
+    _searchController.addListener(() {
+      widget.onSearchChanged(_searchController.text);
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_searchController.text != widget.searchText) {
+      _searchController.text = widget.searchText;
+    }
   }
 
   Future<void> _loadProducts() async {
@@ -34,26 +46,16 @@ class _SearchPageState extends State<SearchPage>{
     });
   }
 
-  void _handleScanTap() async {
-    final scannedCode = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
-    );
-
-    if (!mounted) return;
-
-    if (scannedCode != null) {
-      widget.onSearchChanged(scannedCode);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final filteredProducts = allProducts.where(
-      (product) => product['product']
-          .toString()
-          .toLowerCase()
-          .contains(widget.searchText.toLowerCase()),
+      (product) {
+        final searchLower = widget.searchText.toLowerCase();
+        final productName = product['product']?.toString().toLowerCase() ?? '';
+        final barcode = product['barcode']?.toString().toLowerCase() ?? '';
+
+        return productName.contains(searchLower) || barcode.contains(searchLower);
+      }
     ).toList();
 
     return Padding(
@@ -62,15 +64,11 @@ class _SearchPageState extends State<SearchPage>{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CustomSearchBar(
+            searchController: _searchController,
             onChanged: widget.onSearchChanged,
-            onCameraTap: _handleScanTap,
           ),
           const SizedBox(height: 16),
-          if (widget.searchText.isNotEmpty)
-            Text(
-              'You typed: ${widget.searchText}',
-              style: const TextStyle(fontSize: 18, color: Colors.black87),
-            ),
+          
           Expanded(
             child: ProductListView(
               products: filteredProducts,
