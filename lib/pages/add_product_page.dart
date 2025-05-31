@@ -12,7 +12,7 @@ class AddProductPage extends StatefulWidget{
 class _AddProductPageState extends State<AddProductPage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  String? scannedBarcode;
+  String? scannedBarcode = '';
 
   @override
   Widget build(BuildContext context) {
