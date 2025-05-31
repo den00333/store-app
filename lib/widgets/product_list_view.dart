@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProductListView extends StatelessWidget {
-  final List<String> products;
-  final void Function(String)? onProductTap;
+  final List<Map<String, dynamic>> products;
+  final void Function(Map<String, dynamic>)? onProductTap;
 
   const ProductListView({
     super.key,
@@ -23,6 +23,8 @@ class ProductListView extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
+        final productName = product['product'] ?? 'Unnamed';
+
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           shape: RoundedRectangleBorder(
@@ -31,12 +33,13 @@ class ProductListView extends StatelessWidget {
           child: ListTile(
             leading: const Icon(Icons.inventory_2),
             title: Text(
-              capitalizeWords(product),
+              capitalizeWords(productName.toString()),
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 16,
               ),
             ),
+            subtitle: product['barcode'] != null ? Text('Barcode: ${product['barcode']}') : null,
             trailing: const Icon(Icons.chevron_right),
             onTap: () => onProductTap?.call(product),
           ),

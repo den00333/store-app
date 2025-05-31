@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/barcode_scan_fab.dart';
+import '../services/db_helper.dart';
 
 class AddProductPage extends StatefulWidget{
   const AddProductPage({super.key});
@@ -21,17 +22,9 @@ class _AddProductPageState extends State<AddProductPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: 'Product Title'
-              ),
-            ),
+            TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Product Title'),),
             const SizedBox(height: 16),
-            TextField(
-              controller: _descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
-            ),
+            TextField(controller: _descriptionController,decoration: const InputDecoration(labelText: 'Description'),),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -46,8 +39,34 @@ class _AddProductPageState extends State<AddProductPage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // soon
+                onPressed: () async {
+                  String product = _titleController.text.trim();
+                  String description = _descriptionController.text.trim();
+                  String barcode = scannedBarcode ?? '';
+
+                  if (product.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please enter product title')),
+                    );
+                    return;
+                  }
+
+                  await DBHelper().insertProduct({
+                    'product': product,
+                    'barcode': barcode,
+                    'description': description,
+                  });
+
+                   ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Product added successfully!')),
+                  );
+
+                  _titleController.clear();
+                  _descriptionController.clear();
+                  setState(() {
+                    scannedBarcode = null;
+                  });
+
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,

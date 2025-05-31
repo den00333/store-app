@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/product_list_view.dart';
 import './barcode_scanner_page.dart';
+import '../services/db_helper.dart';
 
 class SearchPage extends StatefulWidget {
   final String searchText;
@@ -18,18 +19,20 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage>{
-  final List<String> allProducts = [
-    'rice',
-    'soap',
-    'toothpaste',
-    'milk',
-    'coffee',
-    'sugar',
-    'shampoo',
-    'sardines',
-    'eggs',
-    'cooking oil',
-  ];
+  List<Map<String, dynamic>> allProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    final products = await DBHelper().getAllProducts();
+    setState(() {
+      allProducts = products;
+    });
+  }
 
   void _handleScanTap() async {
     final scannedCode = await Navigator.push<String>(
@@ -47,7 +50,10 @@ class _SearchPageState extends State<SearchPage>{
   @override
   Widget build(BuildContext context) {
     final filteredProducts = allProducts.where(
-      (product) => product.toLowerCase().contains(widget.searchText.toLowerCase()),
+      (product) => product['product']
+          .toString()
+          .toLowerCase()
+          .contains(widget.searchText.toLowerCase()),
     ).toList();
 
     return Padding(
@@ -69,7 +75,7 @@ class _SearchPageState extends State<SearchPage>{
             child: ProductListView(
               products: filteredProducts,
               onProductTap: (product) {
-                print('Clicked: $product');
+                print('Clicked: ${product['product']}');
               },
             ),
           ),

@@ -16,25 +16,6 @@ class CustomSearchBar extends StatelessWidget {
       decoration: InputDecoration(
         hintText: 'Search for a product...',
         prefixIcon: const Icon(Icons.search),
-        suffixIcon: Container(
-          margin: const EdgeInsets.all(8),
-          child: Container(
-            padding: const EdgeInsets.all(4),
-            decoration: const BoxDecoration(
-              border: Border(
-                left: BorderSide(color: Colors.deepPurple, width: 2),
-              ),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.camera_alt_outlined,
-                size: 25,
-                color: Colors.deepPurple,
-              ),
-              onPressed: onCameraTap,
-            ),
-          ),
-        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
