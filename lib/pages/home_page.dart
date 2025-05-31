@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import './add_product_page.dart';
 import './search_page.dart';
-import '../utils/barcode_utils.dart';
 import '../widgets/barcode_scan_fab.dart';
 
 class HomePage extends StatefulWidget {
