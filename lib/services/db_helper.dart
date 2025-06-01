@@ -48,4 +48,15 @@ class DBHelper {
     final result = await db.query('products', where: 'id = ?', whereArgs: [id]);
     return result.isNotEmpty ? result.first : null;
   }
+
+  Future<void> updateProduct(Map<String, dynamic> product) async {
+    final db = await database;
+    await db.update('products', product, where: 'id = ?', whereArgs: [ product['id'] ]);
+  }
+
+  Future<Map<String, dynamic>?> getProductByBarcode(String barcode) async {
+    final db = await database;
+    final List<Map<String, dynamic>> results = await db.query('products', where: 'barcode = ?', whereArgs: [barcode]);
+    return results.isNotEmpty ? results.first : null;
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/product_list_view.dart';
 import '../services/db_helper.dart';
+import './add_product_page.dart';
 
 class SearchPage extends StatefulWidget {
   final String searchText;
@@ -72,8 +73,14 @@ class _SearchPageState extends State<SearchPage>{
           Expanded(
             child: ProductListView(
               products: filteredProducts,
-              onProductTap: (product) {
-                print('Clicked: ${product['product']}');
+              onProductTap: (product) async {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddProductPage(product: product))
+                );
+                if (result == true) {
+                  _loadProducts();
+                }
               },
             ),
           ),
